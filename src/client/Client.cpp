@@ -166,30 +166,28 @@ void Client::unregisterClient()
 
 void Client::processBuffer(Server *server_ptr)
 {
-    size_t pos;
-    while ((pos = this->buffer.find("\n")) != std::string::npos)
-    {
-        std::string line = this->buffer.substr(0, pos);
-        this->buffer.erase(0, pos + 1); // Remove the \n
-
-        if (!line.empty() && line.back() == '\r')
-            line.pop_back(); // Remove the trailing \r
-
-        while (line.size() > MAX_MSG_LENGTH - 2)
-        {
-            std::string part = line.substr(0, MAX_MSG_LENGTH - 2); // 510 bytes max for a message
-            line = line.substr(MAX_MSG_LENGTH - 2); // Remove the first 510 bytes
-            Message message(part, server_ptr, this->fd_);
-            if (message.isValidMessage() == true)
-                processCommand(message, server_ptr);
-        }
-        if (!line.empty())
-        {
-            Message message(line, server_ptr, this->fd_);
-            if (message.isValidMessage() == true)
-                processCommand(message, server_ptr);
-        }
-    }
+	size_t pos;
+	while ((pos = this->buffer.find("\r\n")) != std::string::npos)
+	{
+		std::string line = this->buffer.substr(0, pos);
+		this->buffer.erase(0, pos + 2); // Remove the \r\n
+		if (!line.empty() && line.back() == '\r')
+			line.pop_back(); // Remove the trailing \r
+		while (line.size() > MAX_MSG_LENGTH - 2)
+		{
+			std::string part = line.substr(0, MAX_MSG_LENGTH - 2); // 510 bytes max for a message
+			line = line.substr(MAX_MSG_LENGTH - 2); // Remove the first 510 bytes
+			Message message(part, server_ptr, this->fd_);
+			if(message.isValidMessage() == true)
+				processCommand(message, server_ptr);
+		}
+		if (!line.empty())
+		{
+			Message message(line, server_ptr, this->fd_);
+			if(message.isValidMessage() == true)
+				processCommand(message, server_ptr);
+		}
+	}
 }
 
 void Client::processCommand(Message &message, Server *server_ptr)
