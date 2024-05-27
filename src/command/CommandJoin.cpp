@@ -3,7 +3,12 @@
 
 void Command::handleJoin(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleJoin") << std::endl;
+		return;
+	}
 	int client_fd = client_ptr->getFd();
 	if (!client_ptr->getRegisterStatus())
 	{
@@ -21,7 +26,6 @@ void Command::handleJoin(const Message &msg)
 	std::vector<std::string> keys;
 	if (parameters.size() > 1)
 		keys = split(parameters[1], ',');
-	//std::string channel_name = parameters.front();
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		std::string channel_name = channels[i];
@@ -89,8 +93,8 @@ void Command::handleJoin(const Message &msg)
 					continue;
 				}
 			}
-			// are these needed if channel is deleted?
-			if (channel_ptr->getUsers().size())
+			//We should setChannelCreationTimestamps if the user is the first user in the channel
+			if (!channel_ptr->isEmpty())
 				channel_ptr->addUser(client_ptr, false);
 			else
 			{

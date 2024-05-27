@@ -2,7 +2,12 @@
 
 void Command::handlePart(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handlePart") << std::endl;
+		return;
+	}
 	int client_fd = client_ptr->getFd();
 	std::vector<std::string> parameters = msg.getParameters();
 

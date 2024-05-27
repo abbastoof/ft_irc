@@ -2,11 +2,15 @@
 
 void Command::handleOper(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleOper") << std::endl;
+		return;
+	}
 	std::string requested_nick = client_ptr->getNickname();
 	std::string client_ip = client_ptr->getIpAddress();
 	std::string client_host = client_ptr->getHostname();
-	std::cout << "host = " << client_host << " ip = " << client_ip << std::endl;
 	int client_fd = client_ptr->getFd();
 	std::vector <t_opers> operator_file = server_ptr_->getOperatorsFile();
 	std::vector<std::string> params = msg.getParameters();

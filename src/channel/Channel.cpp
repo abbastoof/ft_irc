@@ -145,9 +145,14 @@ bool Channel::isPasswordProtected() const
 
 void Channel::addUser(const std::weak_ptr<Client> &client_ptr, bool is_channel_op)
 {
-	if (client_ptr.lock())
-		users_[client_ptr] = is_channel_op;				   // Add the user with operator status if specified
-	removeUserFromInvitedList(client_ptr.lock()->getNickname());
+	auto locked_client_ptr = client_ptr.lock();
+	if (!locked_client_ptr)
+	{
+		std::cerr << "nullptr in addUser" << std::endl;
+		return ;
+	}
+	users_[locked_client_ptr] = is_channel_op;				   // Add the user with operator status if specified
+	removeUserFromInvitedList(locked_client_ptr->getNickname());
 	return;								   // Return true if user added successfully
 }
 
@@ -191,8 +196,10 @@ bool Channel::isOperator(const std::weak_ptr<Client> &client_ptr)
 {
 	auto locked_client_ptr = client_ptr.lock();
 	if (!locked_client_ptr)
+	{
+		std::cerr << "nullptr in removeUser" << std::endl;
 		return false;
-
+	}
 	std::weak_ptr<Client> temp_weak_ptr(locked_client_ptr);
 
 	auto user = users_.find(temp_weak_ptr);
@@ -209,7 +216,7 @@ void Channel::broadcastMessage(const std::weak_ptr<Client> &sender_ptr, const st
 	auto locked_client_ptr = sender_ptr.lock();
 	if (!locked_client_ptr)
 	{
-		std::cerr << ("null ptr in sendTopicToClient") << std::endl;
+		std::cerr << ("null ptr in broadcastMessage") << std::endl;
 		return;
 	}
 	for (const auto &recipient_pair : users_)
@@ -232,10 +239,12 @@ void Channel::broadcastMessageToAll(const std::string &message, Server* server_p
 
 bool Channel::canChangeTopic(const std::weak_ptr<Client> &client_ptr)
 {
-	auto locked_client_ptr = client_ptr.lock();
+		auto locked_client_ptr = client_ptr.lock();
 	if (!locked_client_ptr)
+	{
+		std::cerr << "nullptr in canChangeTopic" << std::endl;
 		return false;
-
+	}
 	if (locked_client_ptr)
 	{
 		if (isOperator(locked_client_ptr))
@@ -255,7 +264,10 @@ bool Channel::changeOpStatus(const std::weak_ptr<Client> &client_ptr, bool statu
 {
 	auto locked_client_ptr = client_ptr.lock();
 	if (!locked_client_ptr)
+	{
+		std::cerr << "nullptr in changeOpStatus" << std::endl;
 		return false;
+	}
 
 	std::weak_ptr<Client> temp_weak_ptr(locked_client_ptr);
 

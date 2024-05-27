@@ -15,7 +15,12 @@
 
 void Command::handleInvite(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleInvite") << std::endl;
+		return;
+	}
 	int fd = client_ptr->getFd();
 	std::vector<std::string> parameters = msg.getParameters();
 
@@ -59,7 +64,6 @@ void Command::handleInvite(const Message &msg)
 			return;
 		}
 	}
-
 	server_ptr_->sendResponse(target_ptr->getFd(), RPL_INVITED(client_ptr->getClientPrefix(), target_ptr->getNickname(), channel_name));
 	server_ptr_->sendResponse(fd, RPL_INVITING(server_ptr_->getServerHostname(), client_ptr->getNickname(), target_ptr->getNickname(), channel_name));
 	if (target_ptr->isAway())
