@@ -4,9 +4,14 @@
 
 void Command::handleUser(const Message &msg)
 {
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleUser") << std::endl;
+		return;
+	}
 	std::vector<std::string> params = msg.getParameters();
 	int client_fd = msg.getClientfd();
-	auto client_ptr = msg.getClientPtr();
 	if (!server_ptr_->hasClientSentPass(client_ptr))
 		return;
 	if (client_ptr->getRegisterStatus() == true)

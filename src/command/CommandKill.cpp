@@ -2,16 +2,21 @@
 
 void Command::handleKill(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleKill") << std::endl;
+		return;
+	}
 	std::string sender_nick = client_ptr->getNickname();
 	int client_fd = msg.getClientfd();
 	std::vector<std::string> params = msg.getParameters();
 //	FOR TESTING PURPOSES
-	if (params[0] == "server")
-	{
-		server_ptr_->signalHandler(SIGINT);
-		return;
-	}
+	// if (params[0] == "server")
+	// {
+	// 	server_ptr_->signalHandler(SIGINT);
+	// 	return;
+	// }
 	std::string target_nick, comment, command;
 	command = msg.getCommand();
 	comment = msg.getTrailer();

@@ -3,7 +3,12 @@
 // Kick format: KICK <channel> <user> [comment] , https://tools.ietf.org/html/rfc2812#section-3.2.8
 void Command::handleKick(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleKick") << std::endl;
+		return;
+	}
 	int client_fd = client_ptr->getFd();
 	std::vector<std::string> parameters = msg.getParameters();
 

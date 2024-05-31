@@ -221,7 +221,10 @@ void Client::leaveChannel(const std::weak_ptr<Channel>& channel_ptr)
 {
 	auto locked_channel_ptr = channel_ptr.lock();
 	if (!locked_channel_ptr)
+	{
+		std::cerr << ("null ptr in leaveChannel") << std::endl;
 		return;
+	}
 	std:: vector<std::weak_ptr<Channel>>::iterator it = channels_.begin();
 	while (it != channels_.end())
     {

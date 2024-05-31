@@ -7,7 +7,12 @@
 
 void Command::handleNick(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleNick") << std::endl;
+		return;
+	}
 	int client_fd = client_ptr->getFd();
 	if (!server_ptr_->hasClientSentPass(client_ptr))
 		return;

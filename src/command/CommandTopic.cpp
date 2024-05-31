@@ -2,7 +2,12 @@
 
 void Command::handleTopic(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleTopic") << std::endl;
+		return;
+	}
 	std::vector<std::string> parameters = msg.getParameters();
 	int client_fd = client_ptr->getFd();
 	if (parameters.empty())

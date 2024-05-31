@@ -48,7 +48,12 @@ static std::string getChannelModes(std::shared_ptr<Channel> channel_ptr, bool us
  */
 void Command::handleMode(const Message &msg)
 {
-	auto client_ptr = msg.getClientPtr();
+	std::shared_ptr<Client> client_ptr = msg.getClientPtr();
+	if (!client_ptr)
+	{
+		std::cerr << ("null ptr in handleMode") << std::endl;
+		return;
+	}
     int client_fd = client_ptr->getFd();
     const auto &parameters = msg.getParameters();
 
